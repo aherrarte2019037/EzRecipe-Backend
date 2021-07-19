@@ -5,7 +5,9 @@ const bodyparser = require("body-parser");
 const cors = require("cors");
 const fileUpload = require('express-fileupload');
 
+const userController = require('./src/controllers/user.controllers')
 
+const userRoutes = require('./src/routes/user.routes')
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 /*app.use( fileUpload({
@@ -17,7 +19,9 @@ app.use(bodyparser.json());
 }) );*/
 app.use(cors());
 
+app.use('/api', userRoutes)
 
+userController.createAdmin();
 
 
 module.exports = app;
