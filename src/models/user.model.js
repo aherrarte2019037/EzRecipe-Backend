@@ -10,7 +10,7 @@ var UserSchema = Schema({
     username: String,
     password: String,
     rol: String,
-    image: String,
+    image: { type: String, default: 'defaultProfile.png' },
     ezCoins: {type: Number, default: 0}
 })
 
