@@ -10,6 +10,8 @@ const userController = require('./src/controllers/user.controllers')
 const userRoutes = require('./src/routes/user.routes')
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
+app.use(cors());
+
 /*app.use( fileUpload({
     abortOnLimit: true,
     responseOnLimit: 'File size is bigger than allowed',
@@ -17,11 +19,11 @@ app.use(bodyparser.json());
         fileSize: 50 * 1024 * 1024
     },
 }) );*/
-app.use(cors());
+
+userController.createAdmin();
 
 app.use('/api', userRoutes)
 
-userController.createAdmin();
 
 
 module.exports = app;

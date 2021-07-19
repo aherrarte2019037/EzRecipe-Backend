@@ -27,7 +27,7 @@ function createAdmin(req, res) {
         }).exec((err, userFound) => {
             if (err) return console.log("Error en la respuesta")
 
-            if (userFound && userFound.length >= 1) {
+            if (userFound && userFound.length == 1) {
                 console.log(`El usuario ${userModel.username} ya existe`)
             } else {
                 bcrypt.hash(password, null, null, (err, passEncrypted) => {
