@@ -15,7 +15,6 @@ function createAdmin(req, res) {
         userModel.password = password
         userModel.rol = rol
         userModel.email = email
-        userModel.image = null;
         userModel.name = 'Angel';
         userModel.lastname = 'Herrarte'
         User.find({
@@ -170,6 +169,16 @@ function deleteUser(req,res){
 
 }
 
+function getRegisteredUsers(req,res){
+    if(req.user.rol != 'AdminApp') return res.status(500).send({ message: 'No tienes permisos' })
+
+    User.find((err, usersFounds) => {
+        if(err) return res.status(500).send({ message: 'Error en la petición' })
+        if(!usersFounds) return res.status(500).send({ message: 'No se encontraron usuarios' })
+        return res.status(200).send({ usersFounds })
+    })
+}
+
 
 module.exports = {
     createAdmin,
@@ -177,5 +186,6 @@ module.exports = {
     register,
     socialLogin,
     editUser,
-    deleteUser
+    deleteUser,
+    getRegisteredUsers
 }
