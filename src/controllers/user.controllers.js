@@ -128,10 +128,54 @@ function register(req,res){
 
 }
 
+function editUser(req,res){
+
+    var idUser = req.params.idUser;
+    var params = req.body;
+
+    delete params.password;
+    delete params.rol;
+
+    User.findByIdAndUpdate(idUser,params,{new: true, useFindAndModify: false},(err,edituser)=>{
+
+        if(err) return res.status(500).send({ message: 'Error en la petición'});
+        if(!edituser) return res.status(500).send({ message: 'Error al editar el Usuario'});
+
+        return res.status(200).send({edituser});
+
+    })
+
+}
+
+function deleteUser(req,res){
+
+    var idUser = req.params.idUser;
+
+    if(idUsuer == req.user.sub){
+
+        User.findByIdAndDelete(idUser,(err,deleteuser)=>{
+
+            if(err) return res.status(500).send({ message: 'Error en la petición'});
+            if(!deleteuser) return res.status(500).send({ message: 'Error al editar el Usuario'});
+
+            return res.status(200).send({deleteuser});
+
+        })
+
+    }else{
+
+        return res.status(500).send({message: 'No posee los permisos para realizar esta acción'});
+
+    }
+
+}
+
 
 module.exports = {
     createAdmin,
     login,
     register,
-    socialLogin
+    socialLogin,
+    editUser,
+    deleteUser
 }
