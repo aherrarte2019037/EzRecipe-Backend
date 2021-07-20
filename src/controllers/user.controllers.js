@@ -164,7 +164,7 @@ function deleteUser(req,res){
 
     }else{
 
-        return res.status(500).send({message: 'No posee los permisos para realizar esta acción'});
+        return res.status(500).send({message: 'No posee los permisos'});
 
     }
 
