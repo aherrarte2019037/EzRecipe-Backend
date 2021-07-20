@@ -9,7 +9,7 @@ const USER = 'root';
 const PASS = 'root';
 const PORT = 27017;
 const DB = 'EzRecipe';
-const haveCredentials = false;
+const haveCredentials = true;
 let URL = '';
 
 if( haveCredentials ) {
