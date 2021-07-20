@@ -70,8 +70,54 @@ function login(req, res) {
     })
 }
 
+function register(req,res){
+    var userModel = new User()
+    var params = req.body
+
+    delete params.rol
+
+    if(params.name && params.lastname && params.email && params.username && params.password){
+        userModel.name = params.name
+        userModel.lastname = params.lastname
+        userModel.username = params.username
+        userModel.email = params.email
+        userModel.password = params.password
+        userModel.rol = 'Client'
+        userModel.image = params.img
+
+        User.find( { $or:[
+            { username: userModel.username },
+            { email: userModel.email }
+        ] } ).exec((err, userFound ) => {
+            if(err) res.status(500).send({ message: 'Error en la petición' })
+
+            if(userFound && userFound.length >= 1){
+                return res.status(500).send({ message: 'El usuario ya existe' })
+            }else {
+                bcrypt.hash(params.password, null, null, (err, passEncrypted) => {
+                    userModel.password = passEncrypted
+                    userModel.save((err, userSaved) => {
+                        if(err) return res.status(500).send({ message: 'Error al guardar el usuario' })
+
+                        if(userSaved){
+                            res.status(200).send(userSaved)
+                        }else {
+                            res.status(404).send({ message: 'No se ha podido guardar el usuario' })
+                        }
+                    })
+                })
+            }
+        })
+
+    }else {
+        return res.status(500).send({ message: 'Faltan datos por ingresar' })
+    }
+
+}
+
 
 module.exports = {
     createAdmin,
-    login
+    login,
+    register
 }
