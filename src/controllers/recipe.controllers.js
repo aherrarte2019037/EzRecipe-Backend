@@ -12,3 +12,18 @@ function createRecipe(req, res){
     }
 
 }
+
+
+function getRecipe(req, res){
+    Recipe.find((err, foundRecipes) =>{
+        if(err) return res.status(500).send({ message: 'Error en la petición'});
+        if(!foundRecipes) return res.status(500).send({ message: 'Error al traer las Recetas'});
+
+        return res.status(200).send({foundRecipes});
+    })
+}
+
+
+module.exports={
+    
+}
