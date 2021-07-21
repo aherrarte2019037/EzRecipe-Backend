@@ -7,7 +7,8 @@ const fileUpload = require('express-fileupload');
 
 const userController = require('./src/controllers/user.controllers')
 
-const userRoutes = require('./src/routes/user.routes')
+const userRoutes = require('./src/routes/user.routes');
+const recipeRoutes = require('./src/routes/recipe.routes');
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 app.use(cors());
@@ -23,6 +24,7 @@ app.use(cors());
 userController.createAdmin();
 
 app.use('/api', userRoutes)
+app.use('/api',recipeRoutes);
 
 
 
