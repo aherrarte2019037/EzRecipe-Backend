@@ -9,5 +9,6 @@ api.post('/login', userController.login);
 api.post('/register', userController.register);
 api.post('/login/social', userController.socialLogin);
 api.put('/editUser/:idUser',md_authentication.ensureAuth,userController.editUser);
+api.get('/getRegisteredUsers', md_authentication.ensureAuth, userController.getRegisteredUsers);
 
 module.exports = api;
