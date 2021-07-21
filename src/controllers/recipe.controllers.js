@@ -48,6 +48,7 @@ function getRecipe(req, res){
 
 module.exports={
 
-    createRecipe
+    createRecipe,
+    getRecipe
     
 }
