@@ -219,6 +219,19 @@ async function getProfileImage( req, res ) {
     
 }
 
+function chefRequests(req,res){
+    if(req.user.rol != 'AdminApp') return res.status(500).send({ message: 'No tienes los permisos'})
+    var boolean = true;
+
+    User.find({requestRoleChef: boolean}, (err, usersFounds) => {
+        if(err) return res.status(500).send({ message: 'Error en la petición' })
+        if(!usersFounds) return res.status(200).send({ message: 'No hay solicitudes de chef'})
+        
+        return res.status(200).send({ usersFounds })
+    })
+
+}
+
 module.exports = {
     createAdmin,
     login,
@@ -228,5 +241,6 @@ module.exports = {
     deleteUser,
     getRegisteredUsers,
     uploadProfileImage,
-    getProfileImage
+    getProfileImage,
+    chefRequests
 }
