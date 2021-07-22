@@ -232,6 +232,69 @@ function chefRequests(req,res){
 
 }
 
+function addThreeCoins(req, res){
+
+    User.findOneAndUpdate({_id: req.user.sub}, {$inc:{ezCoins: 3}} , {new: true, useFindAndModify: false}, (err, addedCoins)=>{
+        if(err) return res.status(500).send({ message: 'Error en la petición' });
+        if(!addedCoins) return res.status(200).send({ message: 'No se agregaron las Coins'});
+        
+        return res.status(200).send({ addedCoins });
+    })
+}
+
+function followUser(req,res){
+    var idUser = req.params.idUser
+    var cont = 0
+
+    if(idUser === req.user.sub) return res.status(500).send({ message: 'No puedes seguirte a ti mismo'})
+
+    User.findById(idUser, (err, userFound) => {
+        if(err) return res.status(err).send({ message: 'Error en la petición' });
+
+        for (let i = 0; i < userFound.followers.length; i++) {
+            
+            if(userFound.followers[i].toString() === req.user.sub){
+                cont++
+            }
+            
+        }
+
+        if(cont === 1) return res.status(200).send({ message: 'Ya sigues al usuario' })
+            
+        User.findByIdAndUpdate(idUser, { $push: { followers: req.user.sub } }, (err, userFollowed) => {
+            if(err) return res.status(err).send({ message: 'Error en la petición' });
+            return res.status(200).send({ message: 'Usuario seguido', userFollowed })
+        })
+
+    })
+
+}
+
+function unfollowUser(req,res){
+    var idUser = req.params.idUser
+    var cont = 0
+
+    User.findById(idUser, (err, userFound) => {
+        if(err) return res.status(500).send({ message: 'Error en la petición'})
+
+        for (let i = 0; i < userFound.followers.length; i++) {
+            
+            if(userFound.followers[i].toString() === req.user.sub){
+                cont++
+            }
+            
+        }
+
+        if(cont === 0) return res.status(200).send({ message: 'No sigues al usuario' })
+            
+        User.findByIdAndUpdate(idUser, { $pull: { followers: req.user.sub }}, (err, userUnfollowed) => {
+            if(err) return res.status(err).send({ message: 'Error en la petición' })
+            return res.status(200).send({ message: 'Dejaste de seguir al usuario', userUnfollowed })
+        })
+
+    })
+}
+
 module.exports = {
     createAdmin,
     login,
@@ -242,5 +305,8 @@ module.exports = {
     getRegisteredUsers,
     uploadProfileImage,
     getProfileImage,
-    chefRequests
+    chefRequests,
+    addThreeCoins,
+    followUser,
+    unfollowUser
 }
