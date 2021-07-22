@@ -18,6 +18,8 @@ function createRecipe(req, res){
             recipeModel.type = 'common'
         }
         
+        recipeModel.idPublisher = req.user.sub;
+
         recipeModel.save((err,savedRecipe)=>{
             if (err) return res.status(500).send({message: 'Error en la petición', err});
             if (!savedRecipe) return res.status(500).send({message: 'Error al guardar la receta'});
@@ -46,9 +48,20 @@ function getRecipe(req, res){
 }
 
 
+function getMyRecipes(req, res){
+    var userId = req.user.sub;
+    Recipe.find({idPublisher: userId}, (err, foundMyRecipes)=>{
+        if(err) return res.status(500).send({ message: 'Error en la petición'});
+        if(!foundMyRecipes) return res.status(500).send({ message: 'Error al traer las Recetas'});
+
+        return res.status(200).send({foundMyRecipes});
+    })
+}
+
 module.exports={
 
     createRecipe,
-    getRecipe
+    getRecipe,
+    getMyRecipes
     
 }
