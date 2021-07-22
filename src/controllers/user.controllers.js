@@ -232,6 +232,17 @@ function chefRequests(req,res){
 
 }
 
+function addThreeCoins(req, res){
+
+    User.findOneAndUpdate({_id: req.user.sub}, {$inc:{ezCoins: 3}} , {new: true, useFindAndModify: false}, (err, addedCoins)=>{
+        if(err) return res.status(500).send({ message: 'Error en la petición' });
+        if(!addedCoins) return res.status(200).send({ message: 'No se agregaron las Coins'});
+        
+        return res.status(200).send({ addedCoins });
+    })
+}
+
+
 module.exports = {
     createAdmin,
     login,
@@ -242,5 +253,6 @@ module.exports = {
     getRegisteredUsers,
     uploadProfileImage,
     getProfileImage,
-    chefRequests
+    chefRequests,
+    addThreeCoins
 }
