@@ -23,12 +23,14 @@ function createRecipe(req, res){
         recipeModel.save((err,savedRecipe)=>{
             if (err) return res.status(500).send({message: 'Error en la petición', err});
             if (!savedRecipe) return res.status(500).send({message: 'Error al guardar la receta'});
+
+            User.findByIdAndUpdate(req.user.sub, { $inc: { ezCoins: +5 } }, {new: true, useNewUrlParser: false}, (err, ezCoinsAdded) => {
+                if(err) return res.status(500).send({message: 'Error en la petición'})
+            })
             
             return res.status(200).send({message: 'Se agregó la receta',savedRecipe});
 
         })
-
-
     }else{
 
         return res.status(500).send({message: 'Debe llenar todos los datos'});
