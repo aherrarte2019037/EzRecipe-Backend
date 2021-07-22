@@ -219,6 +219,30 @@ async function getProfileImage( req, res ) {
     
 }
 
+function chefRequests(req,res){
+    if(req.user.rol != 'AdminApp') return res.status(500).send({ message: 'No tienes los permisos'})
+    var boolean = true;
+
+    User.find({requestRoleChef: boolean}, (err, usersFounds) => {
+        if(err) return res.status(500).send({ message: 'Error en la petición' })
+        if(!usersFounds) return res.status(200).send({ message: 'No hay solicitudes de chef'})
+        
+        return res.status(200).send({ usersFounds })
+    })
+
+}
+
+function addThreeCoins(req, res){
+
+    User.findOneAndUpdate({_id: req.user.sub}, {$inc:{ezCoins: 3}} , {new: true, useFindAndModify: false}, (err, addedCoins)=>{
+        if(err) return res.status(500).send({ message: 'Error en la petición' });
+        if(!addedCoins) return res.status(200).send({ message: 'No se agregaron las Coins'});
+        
+        return res.status(200).send({ addedCoins });
+    })
+}
+
+
 module.exports = {
     createAdmin,
     login,
@@ -228,5 +252,7 @@ module.exports = {
     deleteUser,
     getRegisteredUsers,
     uploadProfileImage,
-    getProfileImage
+    getProfileImage,
+    chefRequests,
+    addThreeCoins
 }

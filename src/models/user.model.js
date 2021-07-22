@@ -14,7 +14,8 @@ var UserSchema = Schema({
     rol: String,
     image: { type: String, default: 'defaultProfile.png' },
     idSubscription: {type: Schema.Types.ObjectId, ref: 'Subscriptions'},
-    ezCoins: {type: Number, default: 0}
+    ezCoins: {type: Number, default: 10},
+    requestRoleChef: {type: Boolean, default: false}
 })
 
 module.exports = mongoose.model('Users', UserSchema)

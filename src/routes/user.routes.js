@@ -12,5 +12,7 @@ api.post('/register', userController.register);
 api.post('/login/social', userController.socialLogin);
 api.post('/profileImg/:id', md_authentication.ensureAuth, userController.uploadProfileImage);
 api.put('/editUser/:idUser',md_authentication.ensureAuth,userController.editUser);
+api.get('/getChefRequests', md_authentication.ensureAuth, userController.chefRequests);
+api.get('/addThreeCoins', md_authentication.ensureAuth, userController.addThreeCoins);
 
 module.exports = api;
