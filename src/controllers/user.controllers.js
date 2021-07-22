@@ -179,6 +179,58 @@ function getRegisteredUsers(req,res){
     })
 }
 
+async function uploadProfileImage( req, res ) {
+    const fileExtensions = ['png', 'jpg', 'gif', 'jpeg' ];
+    if( !req.files ) return res.status(400).send({ message: 'Archivo no encontrado' });
+    if( !req.params.id ) return res.status(400).send({ message: 'Faltan datos' });
+
+    const user = req.params.id;
+    const file = req.files?.files;
+    const type = file.mimetype.split('/')[1];
+    const filename = `profileImg${user}.${type}`
+    if( !fileExtensions.includes(type) ) return res.status(400).send({ fileUploaded: false, error: 'Invalid file extension', extension: type, availableExtensions: fileExtensions });
+
+    try {
+        const userFound = await User.findById( user );
+        if( userFound?.image && userFound?.image !== 'defaultProfile.png' ) await fs.unlink(`uploads/${userFound?.image}`);
+        await file.mv( `uploads/${filename}` );
+        await User.findByIdAndUpdate( user, { image: filename } );
+        res.status(200).send({ message: 'Imagen de  perfil editada', filename: `${filename}` });
+
+    } catch (error) {
+        console.log(error)
+        res.status(400).send({ message: 'Error inesperado' });
+    }
+}
+
+async function getProfileImage( req, res ) {
+    const file = req.params.id;
+
+    try {
+        await fs.access(`uploads/${file}`);
+        res.download(`uploads/${file}`, (error) => {
+            if( error ) return res.status(404).send({ message: error });
+        })
+    }catch (error) {
+        res.download(`uploads/defaultProfile.gif`, (error) => {
+            if( error ) return res.status(404).send({ message: error });
+        })
+    }
+    
+}
+
+function chefRequests(req,res){
+    if(req.user.rol != 'AdminApp') return res.status(500).send({ message: 'No tienes los permisos'})
+    var boolean = true;
+
+    User.find({requestRoleChef: boolean}, (err, usersFounds) => {
+        if(err) return res.status(500).send({ message: 'Error en la petición' })
+        if(!usersFounds) return res.status(200).send({ message: 'No hay solicitudes de chef'})
+        
+        return res.status(200).send({ usersFounds })
+    })
+
+}
 
 module.exports = {
     createAdmin,
@@ -187,5 +239,8 @@ module.exports = {
     socialLogin,
     editUser,
     deleteUser,
-    getRegisteredUsers
+    getRegisteredUsers,
+    uploadProfileImage,
+    getProfileImage,
+    chefRequests
 }
