@@ -176,7 +176,7 @@ function getRegisteredUsers(req,res){
         if(err) return res.status(500).send({ message: 'Error en la petición' })
         if(!usersFounds) return res.status(500).send({ message: 'No se encontraron usuarios' })
         return res.status(200).send({ usersFounds })
-    })
+    }).populate('followers following', 'name lastname username')
 }
 
 async function uploadProfileImage( req, res ) {
@@ -259,18 +259,33 @@ function followUser(req,res){
             
         }
 
-        if(cont === 1) return res.status(200).send({ message: 'Ya sigues al usuario' })
-            
-        User.findByIdAndUpdate(idUser, { $push: { followers: req.user.sub } }, (err, userFollowed) => {
-            if(err) return res.status(err).send({ message: 'Error en la petición' });
-            return res.status(200).send({ message: 'Usuario seguido', userFollowed })
-        })
+        if(cont === 1){
+            User.findByIdAndUpdate(idUser, { $pull: { followers: req.user.sub }}, (err, userUnfollowed) => {
+                if(err) return res.status(err).send({ message: 'Error en la petición' })
+
+                User.findByIdAndUpdate(req.user.sub, { $pull: { following: idUser } }, (err, followingUsers) => {
+                    if(err) return res.status(err).send({ message: 'Error en la petición'})
+                })
+
+                return res.status(200).send({ message: 'Dejaste de seguir al usuario', userUnfollowed })
+            })
+        }else {
+            User.findByIdAndUpdate(idUser, { $push: { followers: req.user.sub } }, (err, userFollowed) => {
+                if(err) return res.status(err).send({ message: 'Error en la petición' });
+
+                User.findByIdAndUpdate(req.user.sub, { $push: { following: idUser } }, (err, followingUsers) => {
+                    if(err) return res.status(err).send({ message: 'Error en la petición'})
+                })
+
+                return res.status(200).send({ message: 'Usuario seguido', userFollowed })
+            })
+        } //return res.status(200).send({ message: 'Ya sigues al usuario' })
 
     })
 
 }
 
-function unfollowUser(req,res){
+/*function unfollowUser(req,res){
     var idUser = req.params.idUser
     var cont = 0
 
@@ -293,7 +308,7 @@ function unfollowUser(req,res){
         })
 
     })
-}
+}*/
 
 module.exports = {
     createAdmin,
@@ -307,6 +322,5 @@ module.exports = {
     getProfileImage,
     chefRequests,
     addThreeCoins,
-    followUser,
-    unfollowUser
+    followUser
 }
