@@ -267,7 +267,7 @@ function followUser(req,res){
                     if(err) return res.status(err).send({ message: 'Error en la petición'})
                 })
 
-                return res.status(200).send({ message: 'Dejaste de seguir al usuario', userUnfollowed })
+                return res.status(200).send({ message: 'Dejaste de seguir al usuario'})
             })
         }else {
             User.findByIdAndUpdate(idUser, { $push: { followers: req.user.sub } }, (err, userFollowed) => {
@@ -277,9 +277,9 @@ function followUser(req,res){
                     if(err) return res.status(err).send({ message: 'Error en la petición'})
                 })
 
-                return res.status(200).send({ message: 'Usuario seguido', userFollowed })
+                return res.status(200).send({ message: 'Usuario seguido'})
             })
-        } //return res.status(200).send({ message: 'Ya sigues al usuario' })
+        }
 
     })
 
