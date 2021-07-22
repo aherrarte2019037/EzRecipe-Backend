@@ -17,7 +17,8 @@ function createRecipe(req, res){
         }else{
             recipeModel.type = 'common'
         }
-        
+
+        recipeModel.dateTime = new Date(Date.now())
         recipeModel.idPublisher = req.user.sub;
 
         recipeModel.save((err,savedRecipe)=>{
@@ -60,10 +61,21 @@ function getMyRecipes(req, res){
     })
 }
 
-module.exports={
+async function latestRecipes(req,res){
+    try {
+        const normal = await Recipe.find({type: 'common'}).limit(2).sort({dateTime:-1})
 
+        const premium = await Recipe.find({type: 'premium'}).limit(2).sort({dateTime:-1})
+    
+        return res.status(200).send(normal.concat(premium))
+    } catch (error) {
+        return res.status(500).send({error})
+    }
+}
+
+module.exports={
     createRecipe,
     getRecipe,
-    getMyRecipes
-    
+    getMyRecipes,
+    latestRecipes
 }
