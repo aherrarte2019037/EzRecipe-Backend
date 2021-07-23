@@ -285,6 +285,15 @@ function followUser(req,res){
 
 }
 
+function getUserLogged(req,res){
+    User.findById(req.user.sub, (err, userFound) => {
+        if(err) return res.status(err).send({ message: 'Error en la petición' })
+
+        return res.status(200).send({ message: 'Usuario encontrado', userFound})
+    })
+
+}
+
 /*function unfollowUser(req,res){
     var idUser = req.params.idUser
     var cont = 0
@@ -322,5 +331,6 @@ module.exports = {
     getProfileImage,
     chefRequests,
     addThreeCoins,
-    followUser
+    followUser,
+    getUserLogged
 }
