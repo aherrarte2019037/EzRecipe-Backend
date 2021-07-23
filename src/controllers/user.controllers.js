@@ -2,7 +2,8 @@
 
 const bcrypt = require('bcrypt-nodejs');
 const User = require('../models/user.model');
-const jwt = require('../services/jwt')
+const jwt = require('../services/jwt');
+const Recipe = require('../models/recipe.model');
 
 function createAdmin(req, res) {
     var userModel = new User();
@@ -319,6 +320,35 @@ function getUserLogged(req,res){
     })
 }*/
 
+
+function purchasedRecipes(req, res){
+    var recipeId = req.params.recipeId;
+    User.findById(req.user.sub, (err, foundUser)=>{
+        if (foundUser.ezCoins >= 45) {
+
+            for (let i = 0; i < foundUser.purchasedRecipes.length; i++) {
+                
+                if(foundUser.purchasedRecipes[i].toString() === recipeId){
+                    return res.status(500).send({ message: 'Esta Receta ya esta comprada'});
+                }
+                
+            }
+
+            User.findByIdAndUpdate(req.user.sub, {$inc:{ezCoins: -45}, $push:{purchasedRecipes: recipeId}},
+            {new: true, useFindAndModify: false}, (err, purchasedRecipe)=>{
+                if(err) return res.status(500).send({ message: 'Error en la petición' });
+                if(!purchasedRecipe) return res.status(200).send({ message: 'No se realizó la compra'});                    
+                return res.status(200).send({ purchasedRecipe });
+            })
+
+        }else{
+            return res.status(500).send({ message: 'No tienes las EzCoins suficientes'});
+        }      
+            
+    })
+}
+
+
 module.exports = {
     createAdmin,
     login,
@@ -332,5 +362,6 @@ module.exports = {
     chefRequests,
     addThreeCoins,
     followUser,
-    getUserLogged
+    getUserLogged,
+    purchasedRecipes
 }
