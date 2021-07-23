@@ -15,11 +15,6 @@ api.put('/editUser/:idUser',md_authentication.ensureAuth,userController.editUser
 api.get('/getChefRequests', md_authentication.ensureAuth, userController.chefRequests);
 api.get('/addThreeCoins', md_authentication.ensureAuth, userController.addThreeCoins);
 api.put('/followUser/:idUser', md_authentication.ensureAuth, userController.followUser);
-<<<<<<< Updated upstream
 api.get('/getUserLogged', md_authentication.ensureAuth, userController.getUserLogged);
-=======
-//api.put('/unfollowUser/:idUser', md_authentication.ensureAuth, userController.unfollowUser);
-api.put('/purchasedRecipes/:recipeId', md_authentication.ensureAuth, userController.purchasedRecipes);
->>>>>>> Stashed changes
-
+api.put('/purchasedRecipes/:purchasedRecipes', md_authentication.ensureAuth, userController.purchasedRecipes);
 module.exports = api;

@@ -362,9 +362,6 @@ module.exports = {
     chefRequests,
     addThreeCoins,
     followUser,
-<<<<<<< Updated upstream
-    getUserLogged
-=======
+    getUserLogged,
     purchasedRecipes
->>>>>>> Stashed changes
 }
