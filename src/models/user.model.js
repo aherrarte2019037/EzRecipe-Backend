@@ -12,10 +12,11 @@ var UserSchema = Schema({
     followers: [{type: Schema.Types.ObjectId, ref: 'Users'}],
     following: [{type: Schema.Types.ObjectId, ref: 'Users'}],
     rol: String,
-    image: { type: String, default: 'defaultProfile.png' },
+    image: [{ type: String }],
     idSubscription: {type: Schema.Types.ObjectId, ref: 'Subscriptions'},
     ezCoins: {type: Number, default: 10},
-    requestRoleChef: {type: Boolean, default: false}
+    requestRoleChef: {type: Boolean, default: false},
+    purchasedRecipes: [{type: Schema.Types.ObjectId, ref: 'Users'}]
 })
 
 module.exports = mongoose.model('Users', UserSchema)

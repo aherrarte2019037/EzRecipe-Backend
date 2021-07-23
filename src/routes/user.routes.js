@@ -14,5 +14,8 @@ api.post('/profileImg/:id', md_authentication.ensureAuth, userController.uploadP
 api.put('/editUser/:idUser',md_authentication.ensureAuth,userController.editUser);
 api.get('/getChefRequests', md_authentication.ensureAuth, userController.chefRequests);
 api.get('/addThreeCoins', md_authentication.ensureAuth, userController.addThreeCoins);
+api.put('/followUser/:idUser', md_authentication.ensureAuth, userController.followUser);
+api.get('/getUserLogged', md_authentication.ensureAuth, userController.getUserLogged);
+api.put('/purchasedRecipes/:purchasedRecipes', md_authentication.ensureAuth, userController.purchasedRecipes);
 
 module.exports = api;
