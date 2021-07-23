@@ -61,6 +61,16 @@ function getMyRecipes(req, res) {
     })
 }
 
+function getRecipesIdPublisher(req, res) {
+    var userId = req.params.userId;
+    Recipe.find({ idPublisher: userId }, (err, foundRecipes) => {
+        if (err) return res.status(500).send({ message: 'Error en la petición' });
+        if (!foundRecipes) return res.status(500).send({ message: 'Error al traer las Recetas' });
+
+        return res.status(200).send({ foundRecipes });
+    })
+}
+
 async function latestRecipes(req, res) {
     try {
         const normal = await Recipe.find({ type: 'common' }).limit(2).sort({ dateTime: -1 })
@@ -106,5 +116,6 @@ module.exports = {
     getRecipe,
     getMyRecipes,
     latestRecipes,
-    giveLikes
+    giveLikes,
+    getRecipesIdPublisher
 }
