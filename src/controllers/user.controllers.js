@@ -295,32 +295,6 @@ function getUserLogged(req,res){
 
 }
 
-/*function unfollowUser(req,res){
-    var idUser = req.params.idUser
-    var cont = 0
-
-    User.findById(idUser, (err, userFound) => {
-        if(err) return res.status(500).send({ message: 'Error en la petición'})
-
-        for (let i = 0; i < userFound.followers.length; i++) {
-            
-            if(userFound.followers[i].toString() === req.user.sub){
-                cont++
-            }
-            
-        }
-
-        if(cont === 0) return res.status(200).send({ message: 'No sigues al usuario' })
-            
-        User.findByIdAndUpdate(idUser, { $pull: { followers: req.user.sub }}, (err, userUnfollowed) => {
-            if(err) return res.status(err).send({ message: 'Error en la petición' })
-            return res.status(200).send({ message: 'Dejaste de seguir al usuario', userUnfollowed })
-        })
-
-    })
-}*/
-
-
 function purchasedRecipes(req, res){
     var recipeId = req.params.recipeId;
     User.findById(req.user.sub, (err, foundUser)=>{

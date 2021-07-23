@@ -17,4 +17,5 @@ api.get('/addThreeCoins', md_authentication.ensureAuth, userController.addThreeC
 api.put('/followUser/:idUser', md_authentication.ensureAuth, userController.followUser);
 api.get('/getUserLogged', md_authentication.ensureAuth, userController.getUserLogged);
 api.put('/purchasedRecipes/:purchasedRecipes', md_authentication.ensureAuth, userController.purchasedRecipes);
+
 module.exports = api;

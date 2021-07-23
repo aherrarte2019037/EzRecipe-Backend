@@ -101,29 +101,6 @@ function giveLikes(req, res) {
     })
 }
 
-/*function unlike(req, res    ){
-    var idRecipe = req.params.idRecipe;
-    var cont = 0 
-
-    Recipe.findById(idRecipe, (err, foundRecipes) => {
-        if (err) return res.status(500).send({ massage: 'Error al buscar la receta' })
-        if (!foundRecipes) return res.status(500).send({ massage: 'Error al retornar la receta' })
-        for (let i = 0; i < foundRecipes.likes.length; i++) {
-
-            if (foundRecipes.likes[i].toString() === req.user.sub) {
-                cont++
-            }
-        }
-        if (cont === 0) return res.status(200).send({ message: "Ya no te gusta la publicación" })
-
-        Recipe.findByIdAndUpdate(idRecipe, {$pull: {likes: req.user.sub}}, (err, unlikedPost) => {
-            if (err) return res.status(500).send({ massage: 'error al actualizar la receta' })
-            return res.status(200).send({ menssage: 'Ya no te gusta la publicacion', unlikedPost })
-
-        })
-    })
-}*/
-
 module.exports = {
     createRecipe,
     getRecipe,
