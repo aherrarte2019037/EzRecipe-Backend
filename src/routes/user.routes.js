@@ -14,5 +14,6 @@ api.post('/profileImg/:id', md_authentication.ensureAuth, userController.uploadP
 api.put('/editUser/:idUser',md_authentication.ensureAuth,userController.editUser);
 api.get('/getChefRequests', md_authentication.ensureAuth, userController.chefRequests);
 api.get('/addThreeCoins', md_authentication.ensureAuth, userController.addThreeCoins);
+api.get('/userLogged', md_authentication.ensureAuth, userController.getUserLogged)
 
 module.exports = api;

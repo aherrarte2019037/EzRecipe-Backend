@@ -4,6 +4,15 @@ const bcrypt = require('bcrypt-nodejs');
 const User = require('../models/user.model');
 const jwt = require('../services/jwt')
 
+function getUserLogged(req,res){
+    User.findById(req.user.sub, (err, userFound) => {
+        if(err) return res.status(err).send({ message: 'Error en la petición' })
+
+        return res.status(200).send({ message: 'Usuario encontrado', userFound})
+    })
+
+}
+
 function createAdmin(req, res) {
     var userModel = new User();
     var username = "AdminApp"
@@ -254,5 +263,6 @@ module.exports = {
     uploadProfileImage,
     getProfileImage,
     chefRequests,
-    addThreeCoins
+    addThreeCoins,
+    getUserLogged
 }
