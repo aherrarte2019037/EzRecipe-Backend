@@ -10,8 +10,8 @@ function createRecipe(req, res) {
 
     if (params.name && params.description && params.category) {
 
-        var recipeModel = new Recipe({ ...params });
-
+        var recipeModel = new Recipe(params);
+        console.log( params )
         if (req.user.rol == 'chef') {
             recipeModel.type = 'premium';
         } else {
@@ -29,7 +29,7 @@ function createRecipe(req, res) {
                 if (err) return res.status(500).send({ message: 'Error en la petición' })
             })
 
-            return res.status(200).send({ message: 'Se agregó la receta', savedRecipe });
+            return res.status(200).send({ message: 'Receta publicada', savedRecipe });
 
         })
     } else {
@@ -61,6 +61,16 @@ function getMyRecipes(req, res) {
     })
 }
 
+function getRecipesIdPublisher(req, res) {
+    var userId = req.params.userId;
+    Recipe.find({ idPublisher: userId }, (err, foundRecipes) => {
+        if (err) return res.status(500).send({ message: 'Error en la petición' });
+        if (!foundRecipes) return res.status(500).send({ message: 'Error al traer las Recetas' });
+
+        return res.status(200).send({ foundRecipes });
+    })
+}
+
 async function latestRecipes(req, res) {
     try {
         const normal = await Recipe.find({ type: 'common' }).limit(2).sort({ dateTime: -1 })
@@ -85,36 +95,19 @@ function giveLikes(req, res) {
                 cont++
             }
         }
-        if (cont === 1) return res.status(200).send({ message: "Ya le diste like a esta publicación" })
-
-        Recipe.findByIdAndUpdate(idRecipe, {$push:{likes: req.user.sub}}, (err, foundRecipes) => {
-            if (err) return res.status(500).send({ massage: 'error al actualizar la receta' })
-            if (!foundRecipes) return res.status(500).send({ message: 'Error con encontrar la receta' })
-        })
-        return res.status(200).send({ menssage: 'Te a gustado la publicacion' })
-    })
-}
-
-function unlike(req, res    ){
-    var idRecipe = req.params.idRecipe;
-    var cont = 0 
-
-    Recipe.findById(idRecipe, (err, foundRecipes) => {
-        if (err) return res.status(500).send({ massage: 'Error al buscar la receta' })
-        if (!foundRecipes) return res.status(500).send({ massage: 'Error al retornar la receta' })
-        for (let i = 0; i < foundRecipes.likes.length; i++) {
-
-            if (foundRecipes.likes[i].toString() === req.user.sub) {
-                cont++
-            }
+        if (cont === 1){
+            Recipe.findByIdAndUpdate(idRecipe, {$pull: {likes: req.user.sub}}, (err, unlikedPost) => {
+                if (err) return res.status(500).send({ massage: 'error al actualizar la receta' })
+                return res.status(200).send({ menssage: 'Ya no te gusta la publicacion', unlikedPost })
+            })
+        }else {
+            Recipe.findByIdAndUpdate(idRecipe, {$push:{likes: req.user.sub}}, (err, foundRecipes) => {
+                if (err) return res.status(500).send({ massage: 'error al actualizar la receta' })
+                if (!foundRecipes) return res.status(500).send({ message: 'Error con encontrar la receta' })
+                return res.status(200).send({ menssage: 'Te a gustado la publicacion' })
+            })
         }
-        if (cont === 0) return res.status(200).send({ message: "Ya no te gusta la publicación" })
-
-        Recipe.findByIdAndUpdate(idRecipe, {$pull: {likes: req.user.sub}}, (err, unlikedPost) => {
-            if (err) return res.status(500).send({ massage: 'error al actualizar la receta' })
-            return res.status(200).send({ menssage: 'Ya no te gusta la publicacion', unlikedPost })
-
-        })
+        
     })
 }
 
@@ -124,5 +117,5 @@ module.exports = {
     getMyRecipes,
     latestRecipes,
     giveLikes,
-    unlike
+    getRecipesIdPublisher
 }

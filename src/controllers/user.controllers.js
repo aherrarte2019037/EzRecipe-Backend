@@ -2,7 +2,18 @@
 
 const bcrypt = require('bcrypt-nodejs');
 const User = require('../models/user.model');
-const jwt = require('../services/jwt')
+const jwt = require('../services/jwt');
+const Recipe = require('../models/recipe.model');
+const Subscription = require('../models/subscription.model');
+
+function getUserLogged(req,res){
+    User.findById(req.user.sub, (err, userFound) => {
+        if(err) return res.status(err).send({ message: 'Error en la petición' })
+
+        return res.status(200).send({ message: 'Usuario encontrado', userFound})
+    })
+
+}
 
 function createAdmin(req, res) {
     var userModel = new User();
@@ -108,15 +119,23 @@ function register(req,res){
             }else {
                 bcrypt.hash(params.password, null, null, (err, passEncrypted) => {
                     userModel.password = passEncrypted
-                    userModel.save((err, userSaved) => {
-                        if(err) return res.status(500).send({ message: 'Error al guardar el usuario' })
 
-                        if(userSaved){
-                            res.status(200).send(userSaved)
-                        }else {
-                            res.status(404).send({ message: 'No se ha podido guardar el usuario' })
-                        }
+                    Subscription.findOne({description:'EzFree'},(err,subSaved)=>{
+
+                        userModel.idSubscription = subSaved._id
+
+                        userModel.save((err, userSaved) => {
+                            if(err) return res.status(500).send({ message: 'Error al guardar el usuario' })
+    
+                            if(userSaved){
+                                res.status(200).send(userSaved)
+                            }else {
+                                res.status(404).send({ message: 'No se ha podido guardar el usuario' })
+                            }
+                        })
+
                     })
+
                 })
             }
         })
@@ -176,7 +195,7 @@ function getRegisteredUsers(req,res){
         if(err) return res.status(500).send({ message: 'Error en la petición' })
         if(!usersFounds) return res.status(500).send({ message: 'No se encontraron usuarios' })
         return res.status(200).send({ usersFounds })
-    })
+    }).populate('followers following', 'name lastname username')
 }
 
 async function uploadProfileImage( req, res ) {
@@ -259,41 +278,68 @@ function followUser(req,res){
             
         }
 
-        if(cont === 1) return res.status(200).send({ message: 'Ya sigues al usuario' })
-            
-        User.findByIdAndUpdate(idUser, { $push: { followers: req.user.sub } }, (err, userFollowed) => {
-            if(err) return res.status(err).send({ message: 'Error en la petición' });
-            return res.status(200).send({ message: 'Usuario seguido', userFollowed })
-        })
+        if(cont === 1){
+            User.findByIdAndUpdate(idUser, { $pull: { followers: req.user.sub }}, (err, userUnfollowed) => {
+                if(err) return res.status(err).send({ message: 'Error en la petición' })
 
-    })
+                User.findByIdAndUpdate(req.user.sub, { $pull: { following: idUser } }, (err, followingUsers) => {
+                    if(err) return res.status(err).send({ message: 'Error en la petición'})
+                })
 
-}
+                return res.status(200).send({ message: 'Dejaste de seguir al usuario'})
+            })
+        }else {
+            User.findByIdAndUpdate(idUser, { $push: { followers: req.user.sub } }, (err, userFollowed) => {
+                if(err) return res.status(err).send({ message: 'Error en la petición' });
 
-function unfollowUser(req,res){
-    var idUser = req.params.idUser
-    var cont = 0
+                User.findByIdAndUpdate(req.user.sub, { $push: { following: idUser } }, (err, followingUsers) => {
+                    if(err) return res.status(err).send({ message: 'Error en la petición'})
+                })
 
-    User.findById(idUser, (err, userFound) => {
-        if(err) return res.status(500).send({ message: 'Error en la petición'})
-
-        for (let i = 0; i < userFound.followers.length; i++) {
-            
-            if(userFound.followers[i].toString() === req.user.sub){
-                cont++
-            }
-            
+                return res.status(200).send({ message: 'Usuario seguido'})
+            })
         }
 
-        if(cont === 0) return res.status(200).send({ message: 'No sigues al usuario' })
-            
-        User.findByIdAndUpdate(idUser, { $pull: { followers: req.user.sub }}, (err, userUnfollowed) => {
-            if(err) return res.status(err).send({ message: 'Error en la petición' })
-            return res.status(200).send({ message: 'Dejaste de seguir al usuario', userUnfollowed })
-        })
+    })
 
+}
+
+function getUserLogged(req,res){
+    User.findById(req.user.sub, (err, userFound) => {
+        if(err) return res.status(err).send({ message: 'Error en la petición' })
+
+        return res.status(200).send({ message: 'Usuario encontrado', userFound})
+    })
+
+}
+
+function purchasedRecipes(req, res){
+    var recipeId = req.params.recipeId;
+    User.findById(req.user.sub, (err, foundUser)=>{
+        if (foundUser.ezCoins >= 45) {
+
+            for (let i = 0; i < foundUser.purchasedRecipes.length; i++) {
+                
+                if(foundUser.purchasedRecipes[i].toString() === recipeId){
+                    return res.status(500).send({ message: 'Esta Receta ya esta comprada'});
+                }
+                
+            }
+
+            User.findByIdAndUpdate(req.user.sub, {$inc:{ezCoins: -45}, $push:{purchasedRecipes: recipeId}},
+            {new: true, useFindAndModify: false}, (err, purchasedRecipe)=>{
+                if(err) return res.status(500).send({ message: 'Error en la petición' });
+                if(!purchasedRecipe) return res.status(200).send({ message: 'No se realizó la compra'});                    
+                return res.status(200).send({ purchasedRecipe });
+            })
+
+        }else{
+            return res.status(500).send({ message: 'No tienes las EzCoins suficientes'});
+        }      
+            
     })
 }
+
 
 module.exports = {
     createAdmin,
@@ -308,5 +354,6 @@ module.exports = {
     chefRequests,
     addThreeCoins,
     followUser,
-    unfollowUser
+    getUserLogged,
+    purchasedRecipes
 }
