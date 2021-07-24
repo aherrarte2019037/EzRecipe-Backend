@@ -43,49 +43,37 @@ function createSubscriptions(req,res){
     subModel4.price = price4;
     subModel4.months = months4;
 
-    /*Subscription.findOne({description:'ezApprenti'},(err,subsFound1)=>{
+    Subscription.findOne({ $or: [
+        { description: 'ezApprenti' },
+        { description: 'ezChef' },
+        { description: 'ezMaster' },
+        { description: 'ezFree' }
+        ] }).exec((err, subsFound) => {
+            if(err) return console.log('Error')
 
-        Subscription.findOne({description:'ezChef'},(err,subsFound2)=>{
+            if(subsFound){
+                return console.log('Ya se crearon')
+            }else {
+                subModel1.save((err,sub1Created)=>{
 
-            Subscription.findOne({description:'ezMaster'},(err,subsFound3)=>{
+                    subModel2.save((err,sub2Created)=>{
 
-                Subscription.findOne({description:'ezFree'},(err,subsFound4)=>{
+                        subModel3.save((err,sub3Created)=>{
 
-                    if(subsFound1 && subsFound2 && subsFound3 && subsFound4){
+                            subModel4.save((err,sub4Created)=>{
 
-                        console.log('Suscripciones ya creadas anteriormente')
+                                console.log('Se crearon las 4 suscripciones');
 
-                    }else{
-
-                        subModel1.save((err,sub1Created)=>{
-
-                            subModel2.save((err,sub2Created)=>{
-    
-                                subModel3.save((err,sub3Created)=>{
-    
-                                    subModel4.save((err,sub4Created)=>{
-    
-                                        console.log('Se crearon las 4 suscripciones');
-    
-                                    })
-    
-                                })
-    
                             })
-    
+
                         })
 
-                    }
-
+                    })
 
                 })
-
-            })
+            }
 
         })
-
-    })*/
-
 
 }
 
