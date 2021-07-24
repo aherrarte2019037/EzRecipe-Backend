@@ -6,6 +6,15 @@ const jwt = require('../services/jwt');
 const Recipe = require('../models/recipe.model');
 const Subscription = require('../models/subscription.model');
 
+function getUserLogged(req,res){
+    User.findById(req.user.sub, (err, userFound) => {
+        if(err) return res.status(err).send({ message: 'Error en la petición' })
+
+        return res.status(200).send({ message: 'Usuario encontrado', userFound})
+    })
+
+}
+
 function createAdmin(req, res) {
     var userModel = new User();
     var username = "AdminApp"

@@ -10,8 +10,8 @@ function createRecipe(req, res) {
 
     if (params.name && params.description && params.category) {
 
-        var recipeModel = new Recipe({ ...params });
-
+        var recipeModel = new Recipe(params);
+        console.log( params )
         if (req.user.rol == 'chef') {
             recipeModel.type = 'premium';
         } else {
@@ -29,7 +29,7 @@ function createRecipe(req, res) {
                 if (err) return res.status(500).send({ message: 'Error en la petición' })
             })
 
-            return res.status(200).send({ message: 'Se agregó la receta', savedRecipe });
+            return res.status(200).send({ message: 'Receta publicada', savedRecipe });
 
         })
     } else {
