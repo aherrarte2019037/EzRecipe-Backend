@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt-nodejs');
 const User = require('../models/user.model');
 const jwt = require('../services/jwt');
 const Recipe = require('../models/recipe.model');
+const Subscription = require('../models/subscription.model');
 
 function createAdmin(req, res) {
     var userModel = new User();
@@ -109,15 +110,23 @@ function register(req,res){
             }else {
                 bcrypt.hash(params.password, null, null, (err, passEncrypted) => {
                     userModel.password = passEncrypted
-                    userModel.save((err, userSaved) => {
-                        if(err) return res.status(500).send({ message: 'Error al guardar el usuario' })
 
-                        if(userSaved){
-                            res.status(200).send(userSaved)
-                        }else {
-                            res.status(404).send({ message: 'No se ha podido guardar el usuario' })
-                        }
+                    Subscription.findOne({description:'EzFree'},(err,subSaved)=>{
+
+                        userModel.idSubscription = subSaved._id
+
+                        userModel.save((err, userSaved) => {
+                            if(err) return res.status(500).send({ message: 'Error al guardar el usuario' })
+    
+                            if(userSaved){
+                                res.status(200).send(userSaved)
+                            }else {
+                                res.status(404).send({ message: 'No se ha podido guardar el usuario' })
+                            }
+                        })
+
                     })
+
                 })
             }
         })
