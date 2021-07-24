@@ -10,6 +10,7 @@ const subController = require('./src/controllers/subscription.controller');
 
 const userRoutes = require('./src/routes/user.routes');
 const recipeRoutes = require('./src/routes/recipe.routes');
+const subRoutes = require('./src/routes/subscription.routes');
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 app.use(cors());
@@ -28,6 +29,7 @@ subController.createSubscriptions();
 
 app.use('/api', userRoutes)
 app.use('/api',recipeRoutes);
+app.use('/api',subRoutes);
 
 
 

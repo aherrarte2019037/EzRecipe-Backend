@@ -77,8 +77,29 @@ function createSubscriptions(req,res){
 
 }
 
+function assignSubChef(req,res){
+
+    Subscription.findOne({description: 'ezChef'},(err,subFound)=>{
+
+        User.findByIdAndUpdate(req.user.sub,{idSubscription: subFound._id},{new: true, useFindAndModify: false},(err,userUpdated)=>{
+
+            if(userUpdated.idSubscription == subFound._id) return res.status(500).send({message: 'Ya estaba asignado a esta suscripción'});
+
+            if(err) return res.status(500).send({ err,message: 'Error en la petición'});
+            if(!userUpdated) return res.status(500).send({message:'Error al cambiar la suscripción'});
+
+            return res.status(200).send({userUpdated});
+
+
+        })
+
+    })
+
+}
+
 module.exports ={
 
-    createSubscriptions
+    createSubscriptions,
+    assignSubChef
 
 }

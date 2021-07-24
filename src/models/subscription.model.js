@@ -8,4 +8,4 @@ price: {type: Number, required: true},
 months: {type: Number, required: true}
 })
 
-module.exports = moongoose.model('Subscription', SubscriptionSchema);
+module.exports = moongoose.model('Subscriptions', SubscriptionSchema);

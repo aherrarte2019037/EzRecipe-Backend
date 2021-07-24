@@ -8,7 +8,7 @@ var RecipeSchema = Schema({
     category: { type: String, required: true },
     type: { type: String, required: true },
     dateTime: { type: Date, required: true, default: Date.now()},
-    image: { type: String, default: 'defaultProfile.png'},
+    image: [{ type: String }],
     ingredients: [{
         name: String,
         quantity: String
