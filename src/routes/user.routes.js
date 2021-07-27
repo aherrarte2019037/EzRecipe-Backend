@@ -20,5 +20,6 @@ api.put('/purchasedRecipes/:purchasedRecipes', md_authentication.ensureAuth, use
 api.get('/petitionChefRequest',md_authentication.ensureAuth,userController.petitionChefRequest);
 api.get('/confirmChefRequest/:idUser', md_authentication.ensureAuth, userController.confirmChefRequest);
 api.get('/cancelChefRequest/:idUser', md_authentication.ensureAuth, userController.cancelChefRequest);
+api.get('/getUserID/:username', md_authentication.ensureAuth, userController.getUserUsername)
 
 module.exports = api;
