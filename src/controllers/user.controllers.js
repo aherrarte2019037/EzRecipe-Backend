@@ -154,14 +154,24 @@ function editUser(req,res){
     delete params.password;
     delete params.rol;
 
-    User.findByIdAndUpdate(idUser,params,{new: true, useFindAndModify: false},(err,edituser)=>{
+    User.find({ $or: [
+        { username: params.username },
+        { email: params.email }
+    ] }).exec(( err, userFound ) => {
+        if(err) return res.status(500).send({ message: 'Error en la petición' })
+        if(userFound && userFound.length >= 1){
+            return res.status(500).send({ message: 'El usuario ya existe' })
 
-        if(err) return res.status(500).send({ message: 'Error en la petición'});
-        if(!edituser) return res.status(500).send({ message: 'Error al editar el Usuario'});
-
-        return res.status(200).send({edituser});
-
-    })
+        }else {
+            User.findByIdAndUpdate(idUser, params, {new: true, useFindAndModify: false}, (err, editedUser) => {
+                if(err) return res.status(500).send({ message: 'Error en la petición' })
+                if(!editedUser) return res.status(500).send({ message: 'No se ha podido encontrar el usuario' })
+                editedUser.password = undefined;
+                editedUser.__v = undefined;
+                return res.status(200).send( editedUser )
+            })
+        }
+    } )
 
 }
 
@@ -239,14 +249,62 @@ async function getProfileImage( req, res ) {
 }
 
 function chefRequests(req,res){
-    if(req.user.rol != 'AdminApp') return res.status(500).send({ message: 'No tienes los permisos'})
+    //if(req.user.rol != 'AdminApp') return res.status(500).send({ message: 'No tienes los permisos'})
     var boolean = true;
 
     User.find({requestRoleChef: boolean}, (err, usersFounds) => {
         if(err) return res.status(500).send({ message: 'Error en la petición' })
         if(!usersFounds) return res.status(200).send({ message: 'No hay solicitudes de chef'})
         
-        return res.status(200).send({ usersFounds })
+        return res.status(200).send(usersFounds)
+    })
+
+}
+
+function petitionChefRequest(req,res){
+
+    if(req.user.rol!= 'Client') return res.status(500).send({message: 'No tiene permisos para realizar esta acción'});
+
+    User.findByIdAndUpdate(req.user.rol,{requestRoleChef: true},{new: true, useFindAndModify: false},(err,UserUpdated)=>{
+
+        if(err) return res.status(500).send(err,{message: 'error en la petición'});
+        if(!userUpdated) return res.status(500).send({message: 'Error al ascender al usuario'});
+
+        return res.status(200).send({userUpdated, message: 'Solocitud de chef aprobada'})
+
+
+    })
+
+}
+
+function confirmChefRequest(req,res){
+
+    if(req.user.rol != 'AdminApp') return res.status(500).send({ message: 'No tienes los permisos'})
+    var idUser = req.params.idUser;
+
+    User.findByIdAndUpdate(idUser,{rol: 'chef', requestRoleChef: false},{new: true, useFindAndModify: false},(err, userUpdated)=>{
+
+        if(err) return res.status(500).send(err,{message: 'error en la petición'});
+        if(!userUpdated) return res.status(500).send({message: 'Error al ascender al usuario'});
+
+        return res.status(200).send({userUpdated, message: 'Solocitud de chef aprobada'})
+
+    })
+
+}
+
+function cancelChefRequest(req,res){
+
+    if(req.user.rol != 'AdminApp') return res.status(500).send({ message: 'No tienes los permisos'})
+    var idUser = req.params.idUser;
+
+    User.findByIdAndUpdate(idUser,{requestRoleChef: false},{new: true, useFindAndModify: false},(err, userUpdated)=>{
+
+        if(err) return res.status(500).send(err,{message: 'error en la petición'});
+        if(!userUpdated) return res.status(500).send({message: 'Error al ascender al usuario'});
+
+        return res.status(200).send({userUpdated, message:'Solicitud de chef cancelada'})
+
     })
 
 }
@@ -313,6 +371,16 @@ function getUserLogged(req,res){
 
 }
 
+function getUserUsername(req,res){
+    var username = req.params.username
+    User.findOne({username: username}, (err, userFound) => {
+        if(err) return res.status(err).send({ message: 'Error en la petición' })
+
+        return res.status(200).send({ message: 'Usuario encontrado', userFound})
+    })
+
+}
+
 function purchasedRecipes(req, res){
     var recipeId = req.params.recipeId;
     User.findById(req.user.sub, (err, foundUser)=>{
@@ -355,5 +423,9 @@ module.exports = {
     addThreeCoins,
     followUser,
     getUserLogged,
-    purchasedRecipes
+    purchasedRecipes,
+    confirmChefRequest,
+    cancelChefRequest,
+    petitionChefRequest,
+    getUserUsername
 }
