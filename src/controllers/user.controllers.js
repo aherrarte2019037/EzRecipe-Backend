@@ -265,12 +265,12 @@ function petitionChefRequest(req,res){
 
     if(req.user.rol!= 'Client') return res.status(500).send({message: 'No tiene permisos para realizar esta acción'});
 
-    User.findByIdAndUpdate(req.user.rol,{requestRoleChef: true},{new: true, useFindAndModify: false},(err,UserUpdated)=>{
+    User.findByIdAndUpdate(req.user.sub,{requestRoleChef: true},{new: true, useFindAndModify: false},(err,UserUpdated)=>{
 
         if(err) return res.status(500).send(err,{message: 'error en la petición'});
-        if(!userUpdated) return res.status(500).send({message: 'Error al ascender al usuario'});
+        if(!UserUpdated) return res.status(500).send({message: 'Error al ascender al usuario'});
 
-        return res.status(200).send({userUpdated, message: 'Solocitud de chef aprobada'})
+        return res.status(200).send({UserUpdated, message: 'Solocitud de chef aprobada'})
 
 
     })

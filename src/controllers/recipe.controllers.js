@@ -1,5 +1,6 @@
 'use strict'
 
+const e = require('connect-flash');
 const recipeModel = require('../models/recipe.model');
 const Recipe = require('../models/recipe.model')
 const User = require('../models/user.model');
@@ -110,11 +111,48 @@ function giveLikes(req, res) {
     })
 }
 
+function saveRecipe(req,res){
+    var idRecipe = req.params.idRecipe
+    var cont = 0
+
+    User.findById(req.user.sub, (err, userFound) => {
+        if(err) return res.status(500).send({ message: 'Error en la petición' })
+
+        for (let i = 0; i < userFound.favoriteRecipes.length; i++) {
+            
+            if(userFound.favoriteRecipes[i].toString() === idRecipe ){
+                cont ++;
+            }
+            
+        }
+
+        if(cont === 1){
+            User.findByIdAndUpdate(req.user.sub, { $pull: { favoriteRecipes: idRecipe } }, { new: true, useFindAndModify: false}, (err, favoriteRecipe) =>{
+                if(err) return res.status(500).send({ message: 'Error en la petición' })
+                if(!favoriteRecipe) return res.status(500).send({ message: 'Error al guardar como favorita la receta'})
+        
+                return res.status(200).send({ message: 'Receta eliminada de favoritas'})
+            })
+
+        }else{
+            User.findByIdAndUpdate(req.user.sub, { $push: { favoriteRecipes: idRecipe } }, { new: true, useFindAndModify: false}, (err, favoriteRecipe) =>{
+                if(err) return res.status(500).send({ message: 'Error en la petición' })
+                if(!favoriteRecipe) return res.status(500).send({ message: 'Error al guardar como favorita la receta'})
+        
+                return res.status(200).send({ message: 'Receta agregada a favoritas'})
+            })
+
+        }
+    })
+
+}
+
 module.exports = {
     createRecipe,
     getRecipe,
     getMyRecipes,
     latestRecipes,
     giveLikes,
-    getRecipesIdPublisher
+    getRecipesIdPublisher,
+    saveRecipe
 }

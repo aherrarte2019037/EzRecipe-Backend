@@ -12,5 +12,6 @@ api.get('/getMyRecipes', md_authentication.ensureAuth, recipeController.getMyRec
 api.get('/latestRecipes', md_authentication.ensureAuth, recipeController.latestRecipes);
 api.put('/giveLikes/:idRecipe', md_authentication.ensureAuth, recipeController.giveLikes);
 api.get('/getRecipesIdPublisher/:userId', md_authentication.ensureAuth, recipeController.getRecipesIdPublisher);
+api.put('/saveRecipe/:idRecipe', md_authentication.ensureAuth, recipeController.saveRecipe)
 
 module.exports = api;
