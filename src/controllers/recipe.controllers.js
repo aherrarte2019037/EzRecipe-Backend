@@ -98,7 +98,7 @@ function giveLikes(req, res) {
         if (cont === 1){
             Recipe.findByIdAndUpdate(idRecipe, {$pull: {likes: req.user.sub}}, (err, unlikedPost) => {
                 if (err) return res.status(500).send({ massage: 'error al actualizar la receta' })
-                return res.status(200).send({ menssage: 'Ya no te gusta la publicacion', unlikedPost })
+                return res.status(200).send({ menssage: 'Ya no te gusta la publicacion' })
             })
         }else {
             Recipe.findByIdAndUpdate(idRecipe, {$push:{likes: req.user.sub}}, (err, foundRecipes) => {
