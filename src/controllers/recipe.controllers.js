@@ -72,9 +72,9 @@ function getRecipesIdPublisher(req, res) {
 
 async function latestRecipes(req, res) {
     try {
-        const normal = await Recipe.find({ type: 'common' }).limit(4).sort({ dateTime: -1 }).populate('idPublisher', 'name lastname')
+        const normal = await Recipe.find({ type: 'common' }).limit(5).sort({ dateTime: -1 }).populate('idPublisher', 'name lastname image')
 
-        const premium = await Recipe.find({ type: 'premium' }).limit(4).sort({ dateTime: -1 }).populate('idPublisher', 'name lastname')
+        const premium = await Recipe.find({ type: 'premium' }).limit(5).sort({ dateTime: -1 }).populate('idPublisher', 'name lastname image')
 
         return res.status(200).send(normal.concat(premium))
     } catch (error) {
