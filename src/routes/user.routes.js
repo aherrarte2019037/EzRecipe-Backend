@@ -16,7 +16,7 @@ api.get('/getChefRequests', md_authentication.ensureAuth, userController.chefReq
 api.get('/addThreeCoins', md_authentication.ensureAuth, userController.addThreeCoins);
 api.put('/followUser/:idUser', md_authentication.ensureAuth, userController.followUser);
 api.get('/getUserLogged', md_authentication.ensureAuth, userController.getUserLogged);
-api.get('/purchasedRecipes/:purchasedRecipes', md_authentication.ensureAuth, userController.purchasedRecipes);
+api.get('/purchasedRecipes/:recipeId', md_authentication.ensureAuth, userController.purchasedRecipes);
 api.get('/petitionChefRequest',md_authentication.ensureAuth,userController.petitionChefRequest);
 api.get('/confirmChefRequest/:idUser', md_authentication.ensureAuth, userController.confirmChefRequest);
 api.get('/cancelChefRequest/:idUser', md_authentication.ensureAuth, userController.cancelChefRequest);
