@@ -410,12 +410,13 @@ function purchasedRecipes(req, res){
 
 function showPurchasedRecipes(req,res){
 
-    User.findById(req.user.sub).populate('purchasedRecipes').exec((err,userFound)=>{
+    User.findById(req.user.sub).exec((err,userFound)=>{
 
-        if(err) return res.status(500).send(err,{ message: 'Error en la petición'});
-        if(!userFound) return res.status(500).send({ message: 'Error al buscar el usuario'});
+        Recipe.find({_id: userFound.purchasedRecipes}).populate('idPublisher','name lastname image').exec((err, recipeFound)=>{
 
-        return res.status(200).send({userFound})
+
+            return res.status(200).send(recipeFound)
+        })
 
 
     })
