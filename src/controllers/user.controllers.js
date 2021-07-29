@@ -408,6 +408,20 @@ function purchasedRecipes(req, res){
     })
 }
 
+function showPurchasedRecipes(req,res){
+
+    User.findById(req.user.sub).populate('purchasedRecipes').exec((err,userFound)=>{
+
+        if(err) return res.status(500).send(err,{ message: 'Error en la petición'});
+        if(!userFound) return res.status(500).send({ message: 'Error al buscar el usuario'});
+
+        return res.status(200).send({userFound})
+
+
+    })
+
+}
+
 
 module.exports = {
     createAdmin,
@@ -427,5 +441,6 @@ module.exports = {
     confirmChefRequest,
     cancelChefRequest,
     petitionChefRequest,
-    getUserUsername
+    getUserUsername,
+    showPurchasedRecipes
 }
