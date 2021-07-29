@@ -16,7 +16,7 @@ var UserSchema = Schema({
     idSubscription: {type: Schema.Types.ObjectId, ref: 'Subscriptions'},
     ezCoins: {type: Number, default: 10},
     requestRoleChef: {type: Boolean, default: false},
-    purchasedRecipes: [{type: Schema.Types.ObjectId, ref: 'Users'}],
+    purchasedRecipes: [{type: Schema.Types.ObjectId, ref: 'Recipe'}],
     favoriteRecipes: [{ type: Schema.Types.ObjectId, ref: 'Recipe'}]
 })
 

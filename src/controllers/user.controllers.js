@@ -385,10 +385,10 @@ function purchasedRecipes(req, res){
     var recipeId = req.params.recipeId;
     User.findById(req.user.sub, (err, foundUser)=>{
         if (foundUser.ezCoins >= 45) {
-
+        
             for (let i = 0; i < foundUser.purchasedRecipes.length; i++) {
                 
-                if(foundUser.purchasedRecipes[i].toString() === recipeId){
+                if(foundUser.purchasedRecipes[i] === recipeId){
                     return res.status(500).send({ message: 'Esta Receta ya esta comprada'});
                 }
                 
