@@ -159,7 +159,7 @@ function editUser(req,res){
         if(err) return res.status(500).send({ message: 'Error en la petición'});
         if(!edituser) return res.status(500).send({ message: 'Error al editar el Usuario'});
 
-        return res.status(200).send({edituser});
+        return res.status(200).send( edituser );
 
     })
 
