@@ -20,6 +20,7 @@ api.get('/purchasedRecipes/:recipeId', md_authentication.ensureAuth, userControl
 api.get('/petitionChefRequest',md_authentication.ensureAuth,userController.petitionChefRequest);
 api.get('/confirmChefRequest/:idUser', md_authentication.ensureAuth, userController.confirmChefRequest);
 api.get('/cancelChefRequest/:idUser', md_authentication.ensureAuth, userController.cancelChefRequest);
-api.get('/getUserID/:username', md_authentication.ensureAuth, userController.getUserUsername)
+api.get('/getUserID/:username', md_authentication.ensureAuth, userController.getUserUsername);
+api.get('/showPurchasedRecipes', md_authentication.ensureAuth, userController.showPurchasedRecipes);
 
 module.exports = api;
