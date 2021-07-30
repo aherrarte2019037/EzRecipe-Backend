@@ -47,7 +47,7 @@ function getRecipe(req, res) {
         if (err) return res.status(500).send({ message: 'Error en la petición' });
         if (!foundRecipes) return res.status(500).send({ message: 'Error al traer las Recetas' });
         return res.status(200).send(foundRecipes);
-    }).sort({ dateTime: -1 }).populate('idPublisher', 'name lastname')
+    }).sort({ dateTime: -1 }).populate('idPublisher', 'name lastname image')
 }
 
 
