@@ -154,16 +154,29 @@ function editUser(req,res){
     delete params.password;
     delete params.rol;
 
-    User.findByIdAndUpdate(idUser,params,{new: true, useFindAndModify: false},(err,edituser)=>{
+    User.find({ $or: [
+        { username: params.username },
+        { email: params.email }
+    ] }).exec(( err, userFound ) => {
+        if(err) return res.status(500).send({ message: 'Error en la petición' })
+        if(userFound && userFound.length >= 1){
+            return res.status(500).send({ message: 'El usuario ya existe' })
 
-        if(err) return res.status(500).send({ message: 'Error en la petición'});
-        if(!edituser) return res.status(500).send({ message: 'Error al editar el Usuario'});
+        }else {
+            User.findByIdAndUpdate(idUser, params, {new: true, useFindAndModify: false}, (err, editedUser) => {
+                if(err) return res.status(500).send({ message: 'Error en la petición' })
+                if(!editedUser) return res.status(500).send({ message: 'No se ha podido encontrar el usuario' })
+                editedUser.password = undefined;
+                editedUser.__v = undefined;
+                return res.status(200).send( editedUser )
+            })
+        }
+    } )
 
-        return res.status(200).send( edituser );
-
-    })
+        return res.status(200).send( editedUser );
 
 }
+
 
 function deleteUser(req,res){
 
@@ -246,7 +259,55 @@ function chefRequests(req,res){
         if(err) return res.status(500).send({ message: 'Error en la petición' })
         if(!usersFounds) return res.status(200).send({ message: 'No hay solicitudes de chef'})
         
-        return res.status(200).send({ usersFounds })
+        return res.status(200).send(usersFounds)
+    })
+
+}
+
+function petitionChefRequest(req,res){
+
+    if(req.user.rol!= 'Client') return res.status(500).send({message: 'No tiene permisos para realizar esta acción'});
+
+    User.findByIdAndUpdate(req.user.sub,{requestRoleChef: true},{new: true, useFindAndModify: false},(err,UserUpdated)=>{
+
+        if(err) return res.status(500).send(err,{message: 'error en la petición'});
+        if(!UserUpdated) return res.status(500).send({message: 'Error al ascender al usuario'});
+
+        return res.status(200).send({UserUpdated, message: 'Solocitud de chef aprobada'})
+
+
+    })
+
+}
+
+function confirmChefRequest(req,res){
+
+    if(req.user.rol != 'AdminApp') return res.status(500).send({ message: 'No tienes los permisos'})
+    var idUser = req.params.idUser;
+
+    User.findByIdAndUpdate(idUser,{rol: 'chef', requestRoleChef: false},{new: true, useFindAndModify: false},(err, userUpdated)=>{
+
+        if(err) return res.status(500).send(err,{message: 'error en la petición'});
+        if(!userUpdated) return res.status(500).send({message: 'Error al ascender al usuario'});
+
+        return res.status(200).send({userUpdated, message: 'Solocitud de chef aprobada'})
+
+    })
+
+}
+
+function cancelChefRequest(req,res){
+
+    if(req.user.rol != 'AdminApp') return res.status(500).send({ message: 'No tienes los permisos'})
+    var idUser = req.params.idUser;
+
+    User.findByIdAndUpdate(idUser,{requestRoleChef: false},{new: true, useFindAndModify: false},(err, userUpdated)=>{
+
+        if(err) return res.status(500).send(err,{message: 'error en la petición'});
+        if(!userUpdated) return res.status(500).send({message: 'Error al ascender al usuario'});
+
+        return res.status(200).send({userUpdated, message:'Solicitud de chef cancelada'})
+
     })
 
 }
@@ -313,14 +374,53 @@ function getUserLogged(req,res){
 
 }
 
+function getUserUsername(req,res){
+    var username = req.params.username
+    User.findOne({username: username}, (err, userFound) => {
+        if(err) return res.status(err).send({ message: 'Error en la petición' })
+
+        return res.status(200).send({ message: 'Usuario encontrado', userFound})
+    })
+}
+
+// Traer el nombre de las ultimas 3 recetas junto con sus likes, count de todas las recetas publicadas junto con el total de los likes, 
+// un count de las favorite Recipe y  un count de las recipes types premium guardadas
+
+
+async function userStats(req, res){
+    var recipeId = req.params.recipeId;
+    try{
+        const myRecipes = await Recipe.find({idPublisher: req.user.sub},{name: 1, likes: 1} ).limit(3).sort({dateTime: -1})
+        const myLikes = await Recipe.find({idPublisher: req.user.sub}, {name: 1, likes: 1})
+        const recipeUser  = await User.findById(req.user.sub,{favoriteRecipes: 1, purchasedRecipes: 1})
+
+        let favoriteRecipe = recipeUser.favoriteRecipes.length
+        let purchasedRecipe = recipeUser.purchasedRecipes.length
+        let quantityRecipe = myLikes.length
+        let likes = 0;
+        
+        for (let i = 0; i < quantityRecipe; i++) {
+            likes = likes+ myLikes[i].likes.length
+        }   
+             
+
+
+        return res.status(200).send({myRecipes, quantityRecipe, likes, favoriteRecipe, purchasedRecipe})
+    }catch(error){
+        return res.status(500).send({ error })
+    }
+    
+}
+    
+
 function purchasedRecipes(req, res){
     var recipeId = req.params.recipeId;
     User.findById(req.user.sub, (err, foundUser)=>{
         if (foundUser.ezCoins >= 45) {
-
+        
             for (let i = 0; i < foundUser.purchasedRecipes.length; i++) {
                 
-                if(foundUser.purchasedRecipes[i].toString() === recipeId){
+                if(foundUser.purchasedRecipes[i] === recipeId){
                     return res.status(500).send({ message: 'Esta Receta ya esta comprada'});
                 }
                 
@@ -340,6 +440,21 @@ function purchasedRecipes(req, res){
     })
 }
 
+function showPurchasedRecipes(req,res){
+
+    User.findById(req.user.sub).exec((err,userFound)=>{
+
+        Recipe.find({_id: userFound.purchasedRecipes}).populate('idPublisher','name lastname image').exec((err, recipeFound)=>{
+
+
+            return res.status(200).send(recipeFound)
+        })
+
+
+    })
+
+}
+
 
 module.exports = {
     createAdmin,
@@ -355,5 +470,10 @@ module.exports = {
     addThreeCoins,
     followUser,
     getUserLogged,
-    purchasedRecipes
+    purchasedRecipes,
+    confirmChefRequest,
+    cancelChefRequest,
+    petitionChefRequest,
+    getUserUsername,
+    showPurchasedRecipes
 }

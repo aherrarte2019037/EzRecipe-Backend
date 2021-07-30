@@ -1,5 +1,6 @@
 'use strict'
 
+const e = require('connect-flash');
 const recipeModel = require('../models/recipe.model');
 const Recipe = require('../models/recipe.model')
 const User = require('../models/user.model');
@@ -97,17 +98,53 @@ function giveLikes(req, res) {
         if (cont === 1){
             Recipe.findByIdAndUpdate(idRecipe, {$pull: {likes: req.user.sub}}, (err, unlikedPost) => {
                 if (err) return res.status(500).send({ massage: 'error al actualizar la receta' })
-                return res.status(200).send({ menssage: 'Ya no te gusta la publicacion', unlikedPost })
+                return res.status(200).send({ menssage: 'Ya no te gusta la publicacion', user: req.user.sub })
             })
         }else {
             Recipe.findByIdAndUpdate(idRecipe, {$push:{likes: req.user.sub}}, (err, foundRecipes) => {
                 if (err) return res.status(500).send({ massage: 'error al actualizar la receta' })
                 if (!foundRecipes) return res.status(500).send({ message: 'Error con encontrar la receta' })
-                return res.status(200).send({ menssage: 'Te a gustado la publicacion' })
+                return res.status(200).send({ menssage: 'Te a gustado la publicacion', user: req.user.sub })
             })
         }
         
     })
+}
+
+function saveRecipe(req,res){
+    var idRecipe = req.params.idRecipe
+    var cont = 0
+
+    User.findById(req.user.sub, (err, userFound) => {
+        if(err) return res.status(500).send({ message: 'Error en la petición' })
+
+        for (let i = 0; i < userFound.favoriteRecipes.length; i++) {
+            
+            if(userFound.favoriteRecipes[i].toString() === idRecipe ){
+                cont ++;
+            }
+            
+        }
+
+        if(cont === 1){
+            User.findByIdAndUpdate(req.user.sub, { $pull: { favoriteRecipes: idRecipe } }, { new: true, useFindAndModify: false}, (err, favoriteRecipe) =>{
+                if(err) return res.status(500).send({ message: 'Error en la petición' })
+                if(!favoriteRecipe) return res.status(500).send({ message: 'Error al guardar como favorita la receta'})
+        
+                return res.status(200).send({ message: 'Receta eliminada de favoritas'})
+            })
+
+        }else{
+            User.findByIdAndUpdate(req.user.sub, { $push: { favoriteRecipes: idRecipe } }, { new: true, useFindAndModify: false}, (err, favoriteRecipe) =>{
+                if(err) return res.status(500).send({ message: 'Error en la petición' })
+                if(!favoriteRecipe) return res.status(500).send({ message: 'Error al guardar como favorita la receta'})
+        
+                return res.status(200).send({ message: 'Receta agregada a favoritas'})
+            })
+
+        }
+    })
+
 }
 
 module.exports = {
@@ -116,5 +153,6 @@ module.exports = {
     getMyRecipes,
     latestRecipes,
     giveLikes,
-    getRecipesIdPublisher
+    getRecipesIdPublisher,
+    saveRecipe
 }
