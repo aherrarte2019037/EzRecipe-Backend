@@ -475,5 +475,6 @@ module.exports = {
     cancelChefRequest,
     petitionChefRequest,
     getUserUsername,
-    showPurchasedRecipes
+    showPurchasedRecipes,
+    userStats
 }
