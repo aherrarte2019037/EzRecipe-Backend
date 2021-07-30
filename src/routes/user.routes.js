@@ -23,4 +23,7 @@ api.get('/cancelChefRequest/:idUser', md_authentication.ensureAuth, userControll
 api.get('/getUserID/:username', md_authentication.ensureAuth, userController.getUserUsername);
 api.get('/showPurchasedRecipes', md_authentication.ensureAuth, userController.showPurchasedRecipes);
 
+api.get('/userStats',md_authentication.ensureAuth, userController.userStats);
+
+
 module.exports = api;

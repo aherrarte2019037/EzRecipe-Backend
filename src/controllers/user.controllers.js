@@ -172,9 +172,6 @@ function editUser(req,res){
             })
         }
     } )
-
-        return res.status(200).send( editedUser );
-
 }
 
 
@@ -381,8 +378,37 @@ function getUserUsername(req,res){
 
         return res.status(200).send({ message: 'Usuario encontrado', userFound})
     })
-
 }
+
+// Traer el nombre de las ultimas 3 recetas junto con sus likes, count de todas las recetas publicadas junto con el total de los likes, 
+// un count de las favorite Recipe y  un count de las recipes types premium guardadas
+
+
+async function userStats(req, res){
+    var recipeId = req.params.recipeId;
+    try{
+        const myRecipes = await Recipe.find({idPublisher: req.user.sub},{name: 1, likes: 1} ).limit(3).sort({dateTime: -1})
+        const myLikes = await Recipe.find({idPublisher: req.user.sub}, {name: 1, likes: 1})
+        const recipeUser  = await User.findById(req.user.sub,{favoriteRecipes: 1, purchasedRecipes: 1})
+
+        let favoriteRecipe = recipeUser.favoriteRecipes.length
+        let purchasedRecipe = recipeUser.purchasedRecipes.length
+        let quantityRecipe = myLikes.length
+        let likes = 0;
+        
+        for (let i = 0; i < quantityRecipe; i++) {
+            likes = likes+ myLikes[i].likes.length
+        }   
+             
+
+
+        return res.status(200).send({myRecipes, quantityRecipe, likes, favoriteRecipe, purchasedRecipe})
+    }catch(error){
+        return res.status(500).send({ error })
+    }
+    
+}
+    
 
 function purchasedRecipes(req, res){
     var recipeId = req.params.recipeId;
@@ -446,5 +472,6 @@ module.exports = {
     cancelChefRequest,
     petitionChefRequest,
     getUserUsername,
-    showPurchasedRecipes
+    showPurchasedRecipes,
+    userStats
 }
