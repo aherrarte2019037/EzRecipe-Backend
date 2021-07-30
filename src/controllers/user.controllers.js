@@ -173,6 +173,10 @@ function editUser(req,res){
         }
     } )
 
+        return res.status(200).send( edituser );
+
+    })
+
 }
 
 function deleteUser(req,res){
