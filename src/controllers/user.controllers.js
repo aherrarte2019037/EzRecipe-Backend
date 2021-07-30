@@ -173,7 +173,7 @@ function editUser(req,res){
         }
     } )
 
-        return res.status(200).send( edituser );
+        return res.status(200).send( editedUser );
 
 }
 
