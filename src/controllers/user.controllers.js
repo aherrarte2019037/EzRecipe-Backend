@@ -172,9 +172,6 @@ function editUser(req,res){
             })
         }
     } )
-
-        return res.status(200).send( editedUser );
-
 }
 
 
@@ -370,7 +367,7 @@ function getUserLogged(req,res){
         if(err) return res.status(err).send({ message: 'Error en la petición' })
 
         return res.status(200).send({ message: 'Usuario encontrado', userFound})
-    })
+    }).populate('idSubscription','description')
 
 }
 
@@ -455,6 +452,21 @@ function showPurchasedRecipes(req,res){
 
 }
 
+function getSavedRecipes(req,res){
+
+    User.findById(req.user.sub).exec((err,userFound)=>{
+
+        Recipe.find({_id: userFound.favoriteRecipes}).populate('idPublisher','name lastname image').exec((err, recipeFound)=>{
+
+
+            return res.status(200).send(recipeFound)
+        })
+
+
+    })
+
+}
+
 
 module.exports = {
     createAdmin,
@@ -475,5 +487,7 @@ module.exports = {
     cancelChefRequest,
     petitionChefRequest,
     getUserUsername,
-    showPurchasedRecipes
+    showPurchasedRecipes,
+    userStats,
+    getSavedRecipes
 }
