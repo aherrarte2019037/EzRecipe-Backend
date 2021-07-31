@@ -22,7 +22,7 @@ api.get('/confirmChefRequest/:idUser', md_authentication.ensureAuth, userControl
 api.get('/cancelChefRequest/:idUser', md_authentication.ensureAuth, userController.cancelChefRequest);
 api.get('/getUserID/:username', md_authentication.ensureAuth, userController.getUserUsername);
 api.get('/showPurchasedRecipes', md_authentication.ensureAuth, userController.showPurchasedRecipes);
-
+api.get('/savedRecipes', md_authentication.ensureAuth, userController.getSavedRecipes)
 api.get('/userStats',md_authentication.ensureAuth, userController.userStats);
 
 
