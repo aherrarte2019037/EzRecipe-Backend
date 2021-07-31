@@ -452,6 +452,21 @@ function showPurchasedRecipes(req,res){
 
 }
 
+function getSavedRecipes(req,res){
+
+    User.findById(req.user.sub).exec((err,userFound)=>{
+
+        Recipe.find({_id: userFound.favoriteRecipes}).populate('idPublisher','name lastname image').exec((err, recipeFound)=>{
+
+
+            return res.status(200).send(recipeFound)
+        })
+
+
+    })
+
+}
+
 
 module.exports = {
     createAdmin,
@@ -473,5 +488,6 @@ module.exports = {
     petitionChefRequest,
     getUserUsername,
     showPurchasedRecipes,
-    userStats
+    userStats,
+    getSavedRecipes
 }
