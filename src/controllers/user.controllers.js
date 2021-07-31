@@ -172,9 +172,6 @@ function editUser(req,res){
             })
         }
     } )
-
-        return res.status(200).send( editedUser );
-
 }
 
 
@@ -370,7 +367,7 @@ function getUserLogged(req,res){
         if(err) return res.status(err).send({ message: 'Error en la petición' })
 
         return res.status(200).send({ message: 'Usuario encontrado', userFound})
-    })
+    }).populate('idSubscription','description')
 
 }
 
