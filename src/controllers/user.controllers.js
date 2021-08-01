@@ -380,10 +380,6 @@ function getUserUsername(req,res){
     })
 }
 
-// Traer el nombre de las ultimas 3 recetas junto con sus likes, count de todas las recetas publicadas junto con el total de los likes, 
-// un count de las favorite Recipe y  un count de las recipes types premium guardadas
-
-
 async function userStats(req, res){
     var recipeId = req.params.recipeId;
     try{
