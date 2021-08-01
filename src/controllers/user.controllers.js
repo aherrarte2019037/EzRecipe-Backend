@@ -380,10 +380,6 @@ function getUserUsername(req,res){
     })
 }
 
-// Traer el nombre de las ultimas 3 recetas junto con sus likes, count de todas las recetas publicadas junto con el total de los likes, 
-// un count de las favorite Recipe y  un count de las recipes types premium guardadas
-
-
 async function userStats(req, res){
     var recipeId = req.params.recipeId;
     try{
@@ -441,7 +437,7 @@ function showPurchasedRecipes(req,res){
 
     User.findById(req.user.sub).exec((err,userFound)=>{
 
-        Recipe.find({_id: userFound.purchasedRecipes}).populate('idPublisher','name lastname image').exec((err, recipeFound)=>{
+        Recipe.find({_id: userFound.purchasedRecipes}).populate('idPublisher','name lastname image username').exec((err, recipeFound)=>{
 
 
             return res.status(200).send(recipeFound)
@@ -456,7 +452,7 @@ function getSavedRecipes(req,res){
 
     User.findById(req.user.sub).exec((err,userFound)=>{
 
-        Recipe.find({_id: userFound.favoriteRecipes}).populate('idPublisher','name lastname image').exec((err, recipeFound)=>{
+        Recipe.find({_id: userFound.favoriteRecipes}).populate('idPublisher','name lastname image username').exec((err, recipeFound)=>{
 
 
             return res.status(200).send(recipeFound)
