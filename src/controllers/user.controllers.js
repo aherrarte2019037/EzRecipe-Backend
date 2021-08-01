@@ -437,7 +437,7 @@ function showPurchasedRecipes(req,res){
 
     User.findById(req.user.sub).exec((err,userFound)=>{
 
-        Recipe.find({_id: userFound.purchasedRecipes}).populate('idPublisher','name lastname image').exec((err, recipeFound)=>{
+        Recipe.find({_id: userFound.purchasedRecipes}).populate('idPublisher','name lastname image username').exec((err, recipeFound)=>{
 
 
             return res.status(200).send(recipeFound)
@@ -452,7 +452,7 @@ function getSavedRecipes(req,res){
 
     User.findById(req.user.sub).exec((err,userFound)=>{
 
-        Recipe.find({_id: userFound.favoriteRecipes}).populate('idPublisher','name lastname image').exec((err, recipeFound)=>{
+        Recipe.find({_id: userFound.favoriteRecipes}).populate('idPublisher','name lastname image username').exec((err, recipeFound)=>{
 
 
             return res.status(200).send(recipeFound)
