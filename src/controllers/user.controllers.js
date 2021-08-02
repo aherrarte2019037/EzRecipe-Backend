@@ -475,7 +475,7 @@ async function search(req,res){
 
         const users = await User.aggregate([
             {
-                $match: { $or: [ { name: { $regex: textToFind, $options: 'i' } }, { lastname: { $regex: textToFind, $options: 'i' } } ] }
+                $match: { $or: [ { name: { $regex: textToFind, $options: 'i' } }, { lastname: { $regex: textToFind, $options: 'i' } }, { username: { $regex: textToFind, $options: 'i' } } ] }
             }
         ])
 
