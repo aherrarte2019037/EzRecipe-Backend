@@ -47,7 +47,7 @@ function getRecipe(req, res) {
         if (err) return res.status(500).send({ message: 'Error en la petición' });
         if (!foundRecipes) return res.status(500).send({ message: 'Error al traer las Recetas' });
         return res.status(200).send(foundRecipes);
-    }).sort({ dateTime: -1 }).populate('idPublisher', 'name lastname image')
+    }).sort({ dateTime: -1 }).populate('idPublisher', 'name lastname image username')
 }
 
 
@@ -67,15 +67,15 @@ function getRecipesIdPublisher(req, res) {
         if (err) return res.status(500).send({ message: 'Error en la petición' });
         if (!foundRecipes) return res.status(500).send({ message: 'Error al traer las Recetas' });
 
-        return res.status(200).send({ foundRecipes });
-    })
+        return res.status(200).send( foundRecipes );
+    }).populate('idPublisher', 'name lastname image').sort({ dateTime: -1 })
 }
 
 async function latestRecipes(req, res) {
     try {
-        const normal = await Recipe.find({ type: 'common' }).limit(5).sort({ dateTime: -1 }).populate('idPublisher', 'name lastname image')
+        const normal = await Recipe.find({ type: 'common' }).limit(5).sort({ dateTime: -1 }).populate('idPublisher', 'name lastname image username')
 
-        const premium = await Recipe.find({ type: 'premium' }).limit(5).sort({ dateTime: -1 }).populate('idPublisher', 'name lastname image')
+        const premium = await Recipe.find({ type: 'premium' }).limit(5).sort({ dateTime: -1 }).populate('idPublisher', 'name lastname image username')
 
         return res.status(200).send(normal.concat(premium))
     } catch (error) {
