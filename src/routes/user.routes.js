@@ -24,6 +24,7 @@ api.get('/getUsername/:username', md_authentication.ensureAuth, userController.g
 api.get('/showPurchasedRecipes', md_authentication.ensureAuth, userController.showPurchasedRecipes);
 api.get('/savedRecipes', md_authentication.ensureAuth, userController.getSavedRecipes)
 api.get('/userStats',md_authentication.ensureAuth, userController.userStats);
+api.get('/search', md_authentication.ensureAuth, userController.search)
 
 
 module.exports = api;
