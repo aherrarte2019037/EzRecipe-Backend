@@ -26,8 +26,8 @@ function createAdmin(req, res) {
         userModel.password = password
         userModel.rol = rol
         userModel.email = email
-        userModel.name = 'Angel';
-        userModel.lastname = 'Herrarte'
+        userModel.name = 'EzAdmin';
+        userModel.lastname = 'EzPana'
         User.find({
             $or: [
                 { username: userModel.username }
