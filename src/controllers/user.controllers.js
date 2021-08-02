@@ -463,6 +463,28 @@ function getSavedRecipes(req,res){
 
 }
 
+async function search(req,res){
+    try {
+        var textToFind = req.body.textToFind
+
+        const recipes = await Recipe.aggregate([
+            {
+                $match: { name: { $regex: textToFind, $options: 'i' } }
+            }
+        ])
+
+        const users = await User.aggregate([
+            {
+                $match: { $or: [ { name: { $regex: textToFind, $options: 'i' } }, { lastname: { $regex: textToFind, $options: 'i' } }, { username: { $regex: textToFind, $options: 'i' } } ] }
+            }
+        ])
+
+        return res.status(200).send({users: users, recipes: recipes})
+    } catch (error) {
+        return res.status(500).send({ error })
+    }
+}
+
 
 module.exports = {
     createAdmin,
@@ -485,5 +507,6 @@ module.exports = {
     getUserUsername,
     showPurchasedRecipes,
     userStats,
-    getSavedRecipes
+    getSavedRecipes,
+    search
 }
