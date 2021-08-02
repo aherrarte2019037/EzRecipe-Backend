@@ -144,6 +144,17 @@ function saveRecipe(req,res){
 
         }
     })
+}
+
+function getIdRecipe(req, res){
+    var idRecipe = req.params.idRecipe
+    Recipe.findById(idRecipe, (err, foundRecipes)=>{
+    if(err) return res.status(500).send({ message: 'error en la peticion'})
+    if(!foundRecipes) return res.status(500).send({ message: 'error al encontrar la receta' })
+
+    return res.status(200).send({ foundRecipes })
+
+    })
 
 }
 
@@ -154,5 +165,6 @@ module.exports = {
     latestRecipes,
     giveLikes,
     getRecipesIdPublisher,
-    saveRecipe
+    saveRecipe,
+    getIdRecipe
 }
