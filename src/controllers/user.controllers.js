@@ -465,7 +465,7 @@ function getSavedRecipes(req,res){
 
 async function search(req,res){
     try {
-        var textToFind = req.body.textToFind
+        var textToFind = req.params.term
 
         const recipes = await Recipe.aggregate([
             {
